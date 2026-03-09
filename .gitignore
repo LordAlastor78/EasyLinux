@@ -1,0 +1,29 @@
+# Logs
+logs/
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+.cache/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Directorios de IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Archivos de backup
+*.bak
+*.backup
+*~
+
+# Archivos de test local
+test/
+testing/
