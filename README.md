@@ -1,7 +1,7 @@
 # 🐧 EasyLinux - Instalador Automático
 
 [![Estado](https://img.shields.io/badge/estado-activo-success.svg)](https://github.com/tu-usuario/EasyLinux)
-[![Versión](https://img.shields.io/badge/versión-1.0-blue.svg)](https://github.com/tu-usuario/EasyLinux)
+[![Versión](https://img.shields.io/badge/versión-2.0-blue.svg)](https://github.com/tu-usuario/EasyLinux)
 [![Licencia](https://img.shields.io/badge/licencia-MIT-green.svg)](LICENSE)
 
 Script de configuración automática para distribuciones Linux basadas en Debian. Perfecto para configurar rápidamente un sistema nuevo con todas tus aplicaciones y herramientas de desarrollo favoritas.
@@ -120,6 +120,25 @@ bash <(wget -qO- https://raw.githubusercontent.com/tu-usuario/EasyLinux/main/ins
 | **C++** | Compilador g++/gcc + build-essential + CMake | Latest |
 | **Java** | OpenJDK | 17 LTS / 21 LTS / 25 |
 | **Node.js** | Runtime JavaScript + npm | LTS |
+| **Go** | Lenguaje de Google, eficiente y concurrente | Latest |
+| **Rust** | Lenguaje seguro y rápido + Cargo | Latest (vía rustup) |
+| **Ruby** | Lenguaje dinámico + RubyGems | Latest |
+| **Dart** | Lenguaje de Google para apps móviles y web | Latest |
+
+### 🛠️ Herramientas Adicionales
+
+| Herramienta | Descripción | Método de Instalación |
+|-------------|-------------|----------------------|
+| **Git** | Sistema de control de versiones distribuido | APT |
+| **Docker** | Plataforma de contenedores + Docker Compose | APT (repo oficial) |
+| **htop** | Monitor de sistema interactivo | APT |
+| **neofetch** | Información del sistema con estilo | APT |
+| **tree** | Visualizador de estructura de directorios | APT |
+| **vim** | Editor de texto avanzado | APT |
+| **tmux** | Multiplexor de terminal | APT |
+| **curl/wget** | Herramientas de descarga | APT |
+| **net-tools** | Herramientas de red (ifconfig, netstat, etc.) | APT |
+| **build-essential** | Compiladores y herramientas de construcción | APT |
 
 ### ⚠️ Compatibilidad con Windows (NO RECOMENDADO)
 
@@ -141,17 +160,16 @@ bash <(wget -qO- https://raw.githubusercontent.com/tu-usuario/EasyLinux/main/ins
 - ❌ No garantiza que todas las aplicaciones funcionen
 - ❌ Mayor consumo de recursos
 
-**Recomendación:** Consulta [WINE_ALTERNATIVES.md](WINE_ALTERNATIVES.md) para encontrar alternativas nativas antes de instalar Wine.
 
-## 🎬 Capturas de Pantalla
+
 
 ### Banner de Inicio
 ```
 ╔════════════════════════════════════════════════════════════════╗
 ║                                                                ║
-║                    🐧 EASY LINUX INSTALLER 🐧                  ║
+║                      EASY LINUX INSTALLER                      ║
 ║                                                                ║
-║         Configuración automática para tu nuevo sistema        ║
+║         Configuración automática para tu nuevo sistema         ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
 ```
@@ -165,11 +183,12 @@ bash <(wget -qO- https://raw.githubusercontent.com/tu-usuario/EasyLinux/main/ins
   1) Instalar Navegadores
   2) Instalar Aplicaciones
   3) Instalar Herramientas de Desarrollo
-  4) Compatibilidad con Windows (⚠️ NO RECOMENDADO)
-  5) Instalar TODO (sin Wine)
+  4) Instalar Herramientas Adicionales (Git, Docker, etc.)
+  5) Compatibilidad con Windows (⚠️ NO RECOMENDADO)
+  6) Instalar TODO (sin Wine)
   0) Salir
 
-Selecciona una opción [0-5]:
+Selecciona una opción [0-6]:
 ```
 
 ## 🛠️ Solución de Problemas

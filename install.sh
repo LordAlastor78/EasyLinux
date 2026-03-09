@@ -2,7 +2,7 @@
 
 ################################################################################
 # EasyLinux - Script de Configuración Automática
-# Versión: 1.0
+# Versión: 2.0
 # Fecha: Marzo 2026
 # Descripción: Instalación automática de aplicaciones para sistemas Linux
 ################################################################################
@@ -505,6 +505,226 @@ install_nodejs() {
     fi
 }
 
+install_go() {
+    print_info "Instalando Go..."
+    
+    # Instalar Go desde los repositorios oficiales
+    if sudo apt install -y golang-go &>> "$LOG_FILE"; then
+        print_success "Go instalado correctamente"
+        go version | tee -a "$LOG_FILE"
+        
+        # Configurar GOPATH si no existe
+        if ! grep -q "GOPATH" ~/.bashrc; then
+            echo "" >> ~/.bashrc
+            echo "# Go configuration" >> ~/.bashrc
+            echo "export GOPATH=\$HOME/go" >> ~/.bashrc
+            echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.bashrc
+            print_info "Variables de entorno de Go agregadas a ~/.bashrc"
+        fi
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar Go"
+        FAILED_APPS+=("Go")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
+install_rust() {
+    print_info "Instalando Rust..."
+    
+    # Instalar dependencias necesarias
+    sudo apt install -y build-essential curl &>> "$LOG_FILE"
+    
+    # Instalar Rust usando rustup (instalador oficial)
+    if curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &>> "$LOG_FILE"; then
+        print_success "Rust instalado correctamente"
+        
+        # Cargar el entorno de Rust
+        source "$HOME/.cargo/env"
+        
+        rustc --version | tee -a "$LOG_FILE"
+        cargo --version | tee -a "$LOG_FILE"
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar Rust"
+        FAILED_APPS+=("Rust")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
+install_ruby() {
+    print_info "Instalando Ruby..."
+    
+    # Instalar Ruby y sus herramientas de desarrollo
+    if sudo apt install -y ruby-full ruby-dev &>> "$LOG_FILE"; then
+        print_success "Ruby instalado correctamente"
+        ruby --version | tee -a "$LOG_FILE"
+        gem --version | tee -a "$LOG_FILE"
+        
+        # Configurar RubyGems para instalar sin sudo
+        if ! grep -q "GEM_HOME" ~/.bashrc; then
+            echo "" >> ~/.bashrc
+            echo "# Ruby Gems configuration" >> ~/.bashrc
+            echo "export GEM_HOME=\"\$HOME/.gems\"" >> ~/.bashrc
+            echo "export PATH=\"\$HOME/.gems/bin:\$PATH\"" >> ~/.bashrc
+            print_info "Variables de entorno de Ruby agregadas a ~/.bashrc"
+        fi
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar Ruby"
+        FAILED_APPS+=("Ruby")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
+install_dart() {
+    print_info "Instalando Dart..."
+    
+    sudo apt install -y apt-transport-https wget &>> "$LOG_FILE"
+    
+    # Agregar repositorio oficial de Dart
+    if ! [ -f /usr/share/keyrings/dart.gpg ]; then
+        wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/dart.gpg &>> "$LOG_FILE"
+    fi
+    
+    echo "deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main" \
+        | sudo tee /etc/apt/sources.list.d/dart_stable.list &>> "$LOG_FILE"
+    
+    sudo apt update &>> "$LOG_FILE"
+    
+    if sudo apt install -y dart &>> "$LOG_FILE"; then
+        print_success "Dart instalado correctamente"
+        
+        # Agregar Dart al PATH
+        if ! grep -q "/usr/lib/dart/bin" ~/.bashrc; then
+            echo "" >> ~/.bashrc
+            echo "# Dart configuration" >> ~/.bashrc
+            echo "export PATH=\"\$PATH:/usr/lib/dart/bin\"" >> ~/.bashrc
+            print_info "Dart agregado al PATH en ~/.bashrc"
+        fi
+        
+        /usr/lib/dart/bin/dart --version | tee -a "$LOG_FILE"
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar Dart"
+        FAILED_APPS+=("Dart")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
+################################################################################
+# Funciones de Instalación - Herramientas Adicionales
+################################################################################
+
+install_git() {
+    print_info "Instalando Git..."
+    
+    if sudo apt install -y git git-gui gitk &>> "$LOG_FILE"; then
+        print_success "Git instalado correctamente"
+        git --version | tee -a "$LOG_FILE"
+        
+        # Configuración básica interactiva
+        echo ""
+        read -p "¿Deseas configurar Git ahora? [s/N]: " git_config
+        if [[ $git_config =~ ^[Ss]$ ]]; then
+            read -p "Ingresa tu nombre: " git_name
+            read -p "Ingresa tu email: " git_email
+            git config --global user.name "$git_name"
+            git config --global user.email "$git_email"
+            git config --global init.defaultBranch main
+            print_success "Git configurado correctamente"
+        fi
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar Git"
+        FAILED_APPS+=("Git")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
+install_docker() {
+    print_info "Instalando Docker..."
+    
+    # Instalar dependencias
+    sudo apt install -y ca-certificates curl gnupg lsb-release &>> "$LOG_FILE"
+    
+    # Agregar clave GPG oficial de Docker
+    sudo install -m 0755 -d /etc/apt/keyrings
+    if ! [ -f /etc/apt/keyrings/docker.gpg ]; then
+        curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg &>> "$LOG_FILE"
+    fi
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    
+    # Configurar repositorio
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list &>> "$LOG_FILE"
+    
+    sudo apt update &>> "$LOG_FILE"
+    
+    # Instalar Docker Engine
+    if sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin &>> "$LOG_FILE"; then
+        print_success "Docker instalado correctamente"
+        
+        # Agregar usuario al grupo docker
+        sudo usermod -aG docker "$USER" &>> "$LOG_FILE"
+        print_info "Usuario agregado al grupo docker (requiere cerrar sesión)"
+        
+        docker --version | tee -a "$LOG_FILE"
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar Docker"
+        FAILED_APPS+=("Docker")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
+install_terminal_tools() {
+    print_info "Instalando herramientas de terminal..."
+    
+    local tools="htop neofetch tree curl wget vim tmux net-tools build-essential"
+    
+    if sudo apt install -y $tools &>> "$LOG_FILE"; then
+        print_success "Herramientas de terminal instaladas correctamente"
+        echo -e "${CYAN}Herramientas instaladas:${NC}"
+        echo "  • htop - Monitor de sistema interactivo"
+        echo "  • neofetch - Información del sistema"
+        echo "  • tree - Visualizador de estructura de directorios"
+        echo "  • curl/wget - Herramientas de descarga"
+        echo "  • vim - Editor de texto avanzado"
+        echo "  • tmux - Multiplexor de terminal"
+        echo "  • net-tools - Herramientas de red"
+        echo "  • build-essential - Herramientas de compilación"
+        
+        ((INSTALL_COUNT++))
+        return 0
+    else
+        print_error "Error al instalar herramientas de terminal"
+        FAILED_APPS+=("Herramientas de Terminal")
+        ((FAILED_COUNT++))
+        return 1
+    fi
+}
+
 ################################################################################
 # Funciones de Instalación - Compatibilidad Windows (NO RECOMENDADO)
 ################################################################################
@@ -662,15 +882,25 @@ menu_development() {
     echo -e "${PURPLE}${BOLD}     HERRAMIENTAS DE DESARROLLO${NC}"
     echo -e "${PURPLE}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo "  1) Visual Studio Code"
-    echo "  2) Python"
-    echo "  3) C++"
-    echo "  4) Java"
-    echo "  5) Node.js"
-    echo "  6) Todas las herramientas"
-    echo "  0) Omitir desarrollo"
+    echo "  ${BOLD}Editores:${NC}"
+    echo "    1) Visual Studio Code"
     echo ""
-    read -p "Opción [0-6]: " dev_choice
+    echo "  ${BOLD}Lenguajes de Programación:${NC}"
+    echo "    2) Python"
+    echo "    3) C++"
+    echo "    4) Java"
+    echo "    5) Node.js"
+    echo "    6) Go"
+    echo "    7) Rust"
+    echo "    8) Ruby"
+    echo "    9) Dart"
+    echo ""
+    echo "  ${BOLD}Opciones Múltiples:${NC}"
+    echo "    10) Todos los lenguajes"
+    echo "    11) Todo (Editor + Lenguajes)"
+    echo "    0) Omitir desarrollo"
+    echo ""
+    read -p "Opción [0-11]: " dev_choice
     
     case $dev_choice in
         1) install_vscode ;;
@@ -678,14 +908,60 @@ menu_development() {
         3) install_cpp ;;
         4) install_java ;;
         5) install_nodejs ;;
-        6)
+        6) install_go ;;
+        7) install_rust ;;
+        8) install_ruby ;;
+        9) install_dart ;;
+        10)
+            install_python
+            install_cpp
+            install_java
+            install_nodejs
+            install_go
+            install_rust
+            install_ruby
+            install_dart
+            ;;
+        11)
             install_vscode
             install_python
             install_cpp
             install_java
             install_nodejs
+            install_go
+            install_rust
+            install_ruby
+            install_dart
             ;;
         0) print_info "Omitiendo instalación de herramientas de desarrollo" ;;
+        *) print_warning "Opción inválida" ;;
+    esac
+}
+
+menu_tools() {
+    echo ""
+    echo -e "${YELLOW}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+    echo -e "${YELLOW}${BOLD}     HERRAMIENTAS ADICIONALES${NC}"
+    echo -e "${YELLOW}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+    echo ""
+    echo "  1) Git (Control de versiones)"
+    echo "  2) Docker (Contenedores)"
+    echo "  3) Herramientas de Terminal (htop, neofetch, tree, vim, etc.)"
+    echo "  4) Todas las herramientas"
+    echo "  0) Omitir herramientas adicionales"
+    echo ""
+    read -p "Opción [0-4]: " tools_choice
+    
+    case $tools_choice in
+        1) install_git ;;
+        2) install_docker ;;
+        3) install_terminal_tools ;;
+        4)
+            install_git
+            install_docker
+            install_terminal_tools
+            ;;
+        0) print_info "Omitiendo instalación de herramientas adicionales" ;;
         *) print_warning "Opción inválida" ;;
     esac
 }
@@ -807,22 +1083,25 @@ main() {
         echo "  1) Instalar Navegadores"
         echo "  2) Instalar Aplicaciones"
         echo "  3) Instalar Herramientas de Desarrollo"
-        echo "  4) Compatibilidad con Windows (⚠️ NO RECOMENDADO)"
-        echo "  5) Instalar TODO (sin Wine)"
+        echo "  4) Instalar Herramientas Adicionales (Git, Docker, etc.)"
+        echo "  5) Compatibilidad con Windows (⚠️ NO RECOMENDADO)"
+        echo "  6) Instalar TODO (sin Wine)"
         echo "  0) Salir"
         echo ""
-        read -p "Selecciona una opción [0-5]: " main_choice
+        read -p "Selecciona una opción [0-6]: " main_choice
         
         case $main_choice in
             1) menu_browsers ;;
             2) menu_applications ;;
             3) menu_development ;;
-            4) menu_wine ;;
-            5)
+            4) menu_tools ;;
+            5) menu_wine ;;
+            6)
                 print_info "Instalando todas las aplicaciones (sin compatibilidad Windows)..."
                 menu_browsers
                 menu_applications
                 menu_development
+                menu_tools
                 break
                 ;;
             0)
