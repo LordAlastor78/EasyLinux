@@ -30,9 +30,14 @@ install_libreoffice() {
   install_apt_many "LibreOffice" libreoffice libreoffice-l10n-es
 }
 
+install_vlc() {
+  install_apt "vlc" "VLC"
+}
+
 install_all_applications() {
   install_discord
   install_thunderbird
   install_session
   install_libreoffice
+  install_vlc
 }

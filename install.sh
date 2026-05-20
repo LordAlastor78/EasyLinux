@@ -133,16 +133,18 @@ menu_applications() {
   echo "  2) Thunderbird"
   echo "  3) Session"
   echo "  4) LibreOffice"
-  echo "  5) All"
+  echo "  5) VLC"
+  echo "  6) All"
   echo "  0) Skip"
-  read -r -p "Option [0-5]: " app_choice
+  read -r -p "Option [0-6]: " app_choice
 
   case "$app_choice" in
     1) install_discord ;;
     2) install_thunderbird ;;
     3) install_session ;;
     4) install_libreoffice ;;
-    5) install_all_applications ;;
+    5) install_vlc ;;
+    6) install_all_applications ;;
     0) print_info "Skipping applications" ;;
     *) print_warning "Invalid option" ;;
   esac
