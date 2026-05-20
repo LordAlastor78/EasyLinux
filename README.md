@@ -1,406 +1,596 @@
-# 🐧 EasyLinux - Instalador Automático
+# 🐧 EasyLinux - Automatic Installer
 
-[![Estado](https://img.shields.io/badge/estado-activo-success.svg)](https://github.com/tu-usuario/EasyLinux)
-[![Versión](https://img.shields.io/badge/versión-2.0-blue.svg)](https://github.com/tu-usuario/EasyLinux)
-[![Licencia](https://img.shields.io/badge/licencia-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/your-user/EasyLinux)
+[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/your-user/EasyLinux)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Script de configuración automática para distribuciones Linux basadas en Debian. Perfecto para configurar rápidamente un sistema nuevo con todas tus aplicaciones y herramientas de desarrollo favoritas.
+Automatic setup project for Debian-based Linux distributions. Perfect for quickly configuring a fresh system with applications and development tools, now with a modular architecture for easier maintenance and scalability.
 
-## 📋 Tabla de Contenidos
+---
 
-- [Características](#-características)
-- [Requisitos](#-requisitos)
-- [Instalación y Uso](#-instalación-y-uso)
-- [Software Disponible](#-software-disponible)
-- [Capturas de Pantalla](#-capturas-de-pantalla)
-- [Solución de Problemas](#-solución-de-problemas)
-- [Contribuir](#-contribuir)
-- [Licencia](#-licencia)
+# 📋 Table of Contents
 
-## ✨ Características
+* [Features](#-features)
+* [Requirements](#-requirements)
+* [Installation and Usage](#-installation-and-usage)
+* [Available Software](#-available-software)
+* [Screenshots](#-screenshots)
+* [Troubleshooting](#-troubleshooting)
+* [Contributing](#-contributing)
+* [License](#-license)
 
-- **🚀 Instalación Rápida**: Automatiza la instalación de todas tus aplicaciones favoritas
-- **🎯 Menú Interactivo**: Interfaz amigable con menús de selección
-- **📊 Barra de Progreso**: Visualiza el progreso de instalación en tiempo real
-- **🔍 Verificaciones**: Comprueba permisos, conexión a Internet y sistema operativo
-- **📝 Logging Completo**: Todos los procesos se registran en archivos log
-- **🎨 Interfaz Colorida**: Mensajes con colores para mejor legibilidad
-- **🔐 Seguro**: No requiere ejecutarse como root, solicita sudo cuando es necesario
-- **📦 Múltiples Fuentes**: Instala desde APT, Flatpak, descarga directa, etc.
+---
 
-## 🔧 Requisitos
+# ✨ Features
 
-- **Sistema Operativo**: 
-  - Parrot OS (recomendado)
-  - Debian 11+ / Ubuntu 20.04+
-  - Linux Mint 20+
-  - Cualquier derivada de Debian
-  
-- **Hardware**:
-  - Al menos 5GB de espacio libre
-  - Conexión a Internet activa
-  - Procesador de 64 bits (amd64)
+* **🚀 Fast Installation**: Automates installation of your favorite applications
+* **🎯 Interactive Menu**: User-friendly menu-based interface
+* **📊 Progress Tracking**: Real-time installation progress
+* **🔍 System Checks**: Verifies permissions, internet connection, and OS compatibility
+* **📝 Full Logging**: All operations are saved into log files
+* **🎨 Colored Interface**: Improved readability with colored output
+* **🔐 Secure**: Does not require running as root, requests sudo only when needed
+* **📦 Multiple Sources**: Installs from APT, Flatpak, direct downloads, and more
+* **🧩 Modular Architecture**: Functions, modules, profiles, and catalogs separated cleanly
+* **⚙️ Declarative Profiles**: Reusable setup profiles and package catalogs
+* **🛡️ Safer Install Logic**: Strict Bash mode, centralized error handling, and idempotent installs
 
-- **Permisos**:
-  - Usuario con privilegios sudo
-  - No ejecutar como root
+---
 
-## 🚀 Instalación y Uso
+# 🔧 Requirements
 
-### Método 1: Clonando el repositorio
+## Supported Operating Systems
+
+* Parrot OS (recommended)
+* Debian 11+ / Ubuntu 20.04+
+* Linux Mint 20+
+* Any Debian-based distribution
+
+## Hardware Requirements
+
+* At least 5GB of free disk space
+* Active internet connection
+* 64-bit processor (amd64)
+
+## Permissions
+
+* User with sudo privileges
+* Do not run as root
+
+---
+
+# 🚀 Installation and Usage
+
+## Method 1: Clone the Repository
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/tu-usuario/EasyLinux.git
+# Clone the repository
+git clone https://github.com/your-user/EasyLinux.git
 
-# Entrar al directorio
+# Enter the project directory
 cd EasyLinux
 
-# Dar permisos de ejecución
+# Make the installer executable
 chmod +x install.sh
 
-# Ejecutar el script
+# Run the installer
 ./install.sh
 ```
 
-### Método 2: Descarga directa
+---
+
+# ⚡ Running with Profiles and Flags
 
 ```bash
-# Descargar el script
-wget https://raw.githubusercontent.com/tu-usuario/EasyLinux/main/install.sh
+# Install everything without category menus
+./install.sh --all
 
-# Dar permisos de ejecución
-chmod +x install.sh
+# Developer profile
+./install.sh --developer
 
-# Ejecutar
-./install.sh
+# Custom declarative profile
+./install.sh --profile developer
+
+# Desktop profile
+./install.sh --desktop
+
+# Non-interactive confirmation mode
+./install.sh --developer --yes
+
+# Skip initial apt update
+./install.sh --no-update
 ```
 
-### Método 3: Ejecución directa (una línea)
+> Note: the old "one-liner" direct download method is no longer recommended because the installer now uses multiple modules and configuration files.
+
+---
+
+# 🧩 Declarative Profiles
+
+Profiles are stored inside:
+
+```text
+config/profiles/*.conf
+```
+
+and executed in declarative steps.
+
+Example profile:
 
 ```bash
-bash <(wget -qO- https://raw.githubusercontent.com/tu-usuario/EasyLinux/main/install.sh)
+PROFILE_DESCRIPTION="Full development stack"
+
+PROFILE_CATALOGS=(
+   terminal-base
+   development-base
+)
+
+PROFILE_STEPS=(
+   install_vscode
+   install_java
+)
+
+PROFILE_APT_PACKAGES=(
+   shellcheck
+)
+
+PROFILE_FLATPAK_APPS=(
+   "com.github.tchx84.Flatseal|Flatseal"
+)
+
+PROFILE_VSCODE_EXTENSIONS=(
+   "ms-python.python|Python"
+)
 ```
 
-## 📦 Software Disponible
+You can create your own profile, for example:
 
-### 🌐 Navegadores Web
-
-| Navegador | Descripción | Método de Instalación |
-|-----------|-------------|----------------------|
-| **Brave** | Navegador enfocado en privacidad con bloqueador de anuncios | APT (repo oficial) |
-| **LibreWolf** | Firefox sin telemetría ni rastreadores | APT (repo oficial) |
-| **Floorp** | Firefox con características avanzadas | Flatpak |
-| **Supremium/Chromium** | Chrome open source | APT/Flatpak |
-
-### 💬 Aplicaciones de Comunicación
-
-| Aplicación | Descripción | Método de Instalación |
-|------------|-------------|----------------------|
-| **Discord** | Plataforma de comunicación para comunidades | Flatpak/DEB |
-| **Thunderbird** | Cliente de correo electrónico de código abierto | APT |
-| **Session** | Mensajería privada sin números de teléfono | DEB directo |
-
-### 📄 Productividad
-
-| Aplicación | Descripción | Método de Instalación |
-|------------|-------------|----------------------|
-| **LibreOffice** | Suite ofimática completa (Writer, Calc, Impress, etc.) | APT |
-
-### 👨‍💻 Herramientas de Desarrollo
-
-#### Editor de Código
-- **Visual Studio Code** - IDE completo con extensiones
-
-#### Lenguajes y Compiladores
-
-| Herramienta | Descripción | Versiones |
-|-------------|-------------|-----------|
-| **Python** | Lenguaje interpretado + pip + venv | Latest 3.x |
-| **C++** | Compilador g++/gcc + build-essential + CMake | Latest |
-| **Java** | OpenJDK | 17 LTS / 21 LTS / 25 |
-| **Node.js** | Runtime JavaScript + npm | LTS |
-| **Go** | Lenguaje de Google, eficiente y concurrente | Latest |
-| **Rust** | Lenguaje seguro y rápido + Cargo | Latest (vía rustup) |
-| **Ruby** | Lenguaje dinámico + RubyGems | Latest |
-| **Dart** | Lenguaje de Google para apps móviles y web | Latest |
-
-### 🛠️ Herramientas Adicionales
-
-| Herramienta | Descripción | Método de Instalación |
-|-------------|-------------|----------------------|
-| **Git** | Sistema de control de versiones distribuido | APT |
-| **Docker** | Plataforma de contenedores + Docker Compose | APT (repo oficial) |
-| **htop** | Monitor de sistema interactivo | APT |
-| **neofetch** | Información del sistema con estilo | APT |
-| **tree** | Visualizador de estructura de directorios | APT |
-| **vim** | Editor de texto avanzado | APT |
-| **tmux** | Multiplexor de terminal | APT |
-| **curl/wget** | Herramientas de descarga | APT |
-| **net-tools** | Herramientas de red (ifconfig, netstat, etc.) | APT |
-| **build-essential** | Compiladores y herramientas de construcción | APT |
-
-### ⚠️ Compatibilidad con Windows (NO RECOMENDADO)
-
-> **⚠️ ADVERTENCIA:** Esta opción no es recomendada. Preferible usar aplicaciones nativas de Linux.
-> 
-> 📚 **Documentación adicional:**
-> - [WINE_ALTERNATIVES.md](WINE_ALTERNATIVES.md) - Lista completa de alternativas nativas
-> - [WINE_GUIDE.md](WINE_GUIDE.md) - Guía técnica detallada de Wine
-
-| Herramienta | Descripción | Método de Instalación |
-|-------------|-------------|----------------------|
-| **Wine** | Capa de compatibilidad para ejecutar apps Windows | APT |
-| **Winetricks** | Gestor de componentes Windows | APT |
-| **PlayOnLinux** | Interfaz gráfica para Wine | APT |
-
-**Limitaciones:**
-- ❌ Puede causar inestabilidad en el sistema
-- ❌ Rendimiento inferior a aplicaciones nativas
-- ❌ No garantiza que todas las aplicaciones funcionen
-- ❌ Mayor consumo de recursos
-
-
-
-
-### Banner de Inicio
+```text
+config/profiles/custom.conf
 ```
+
+and run it with:
+
+```bash
+./install.sh --profile custom
+```
+
+---
+
+# Supported Profile Keys
+
+| Key                         | Description                                                       |                |
+| --------------------------- | ----------------------------------------------------------------- | -------------- |
+| `PROFILE_CATALOGS`          | Reusable catalogs defined in `config/catalogs/*.conf`             |                |
+| `PROFILE_STEPS`             | Existing installer functions (example: `install_all_development`) |                |
+| `PROFILE_APT_PACKAGES`      | APT package names                                                 |                |
+| `PROFILE_FLATPAK_APPS`      | List of `"appId                                                   | Display Name"` |
+| `PROFILE_VSCODE_EXTENSIONS` | List of `"extensionId                                             | Display Name"` |
+
+---
+
+# 📚 Catalog Example
+
+Example catalog:
+
+```bash
+# config/catalogs/development-base.conf
+
+CATALOG_DESCRIPTION="Base development tooling"
+
+CATALOG_STEPS=(
+   install_python
+   install_cpp
+   install_go
+)
+
+CATALOG_VSCODE_EXTENSIONS=(
+   "ms-python.python|Python"
+)
+```
+
+---
+
+# 🏗️ Project Structure
+
+```text
+EasyLinux/
+├── install.sh
+├── functions/
+├── modules/
+├── config/
+│   ├── profiles/
+│   └── catalogs/
+└── logs/
+```
+
+---
+
+# 📦 Available Software
+
+# 🌐 Web Browsers
+
+| Browser                | Description                                       | Installation Method       |
+| ---------------------- | ------------------------------------------------- | ------------------------- |
+| **Brave**              | Privacy-focused browser with built-in ad blocking | APT (official repository) |
+| **LibreWolf**          | Firefox without telemetry or trackers             | APT (official repository) |
+| **Floorp**             | Firefox-based browser with advanced features      | Flatpak                   |
+| **Chromium/Supremium** | Open-source Chrome-based browser                  | APT/Flatpak               |
+
+---
+
+# 💬 Communication Applications
+
+| Application     | Description                                     | Installation Method |
+| --------------- | ----------------------------------------------- | ------------------- |
+| **Discord**     | Communication platform for communities          | Flatpak/DEB         |
+| **Thunderbird** | Open-source email client                        | APT                 |
+| **Session**     | Privacy-focused messenger without phone numbers | Direct DEB          |
+
+---
+
+# 📄 Productivity
+
+| Application     | Description                                         | Installation Method |
+| --------------- | --------------------------------------------------- | ------------------- |
+| **LibreOffice** | Complete office suite (Writer, Calc, Impress, etc.) | APT                 |
+
+---
+
+# 👨‍💻 Development Tools
+
+## Code Editor
+
+* **Visual Studio Code** — Full-featured IDE with extension support
+
+## Languages and Toolchains
+
+| Tool        | Description                                | Versions             |
+| ----------- | ------------------------------------------ | -------------------- |
+| **Python**  | Interpreted language + pip + venv          | Latest 3.x           |
+| **C++**     | gcc/g++ compiler + build-essential + CMake | Latest               |
+| **Java**    | OpenJDK                                    | 17 LTS / 21 LTS / 25 |
+| **Node.js** | JavaScript runtime + npm                   | LTS                  |
+| **Go**      | Efficient concurrent language by Google    | Latest               |
+| **Rust**    | Safe and fast systems language + Cargo     | Latest (via rustup)  |
+| **Ruby**    | Dynamic language + RubyGems                | Latest               |
+| **Dart**    | Google language for mobile/web apps        | Latest               |
+
+---
+
+# 🛠️ Additional Tools
+
+| Tool                | Description                                 | Installation Method       |
+| ------------------- | ------------------------------------------- | ------------------------- |
+| **Git**             | Distributed version control system          | APT                       |
+| **Docker**          | Container platform + Docker Compose         | APT (official repository) |
+| **htop**            | Interactive process monitor                 | APT                       |
+| **fastfetch**       | Modern system information tool              | APT                       |
+| **tree**            | Directory structure viewer                  | APT                       |
+| **vim**             | Advanced text editor                        | APT                       |
+| **tmux**            | Terminal multiplexer                        | APT                       |
+| **curl/wget**       | Download utilities                          | APT                       |
+| **net-tools**       | Network utilities (ifconfig, netstat, etc.) | APT                       |
+| **build-essential** | Essential compilers and build tools         | APT                       |
+
+---
+
+# ⚠️ Windows Compatibility (NOT RECOMMENDED)
+
+> **⚠️ WARNING:** This option is not recommended. Native Linux applications are strongly preferred.
+>
+> 📚 Additional documentation:
+>
+> * `WINE_ALTERNATIVES.md` — Native alternatives to Windows software
+> * `WINE_GUIDE.md` — Technical Wine setup guide
+
+| Tool            | Description                                  | Installation Method |
+| --------------- | -------------------------------------------- | ------------------- |
+| **Wine**        | Compatibility layer for Windows applications | APT                 |
+| **Winetricks**  | Windows component manager                    | APT                 |
+| **PlayOnLinux** | Graphical Wine frontend                      | APT                 |
+
+## Limitations
+
+* ❌ May introduce system instability
+* ❌ Lower performance than native Linux apps
+* ❌ Does not guarantee all applications will work
+* ❌ Higher resource consumption
+
+---
+
+# 🖥️ Startup Banner
+
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                                                                ║
 ║                      EASY LINUX INSTALLER                      ║
 ║                                                                ║
-║         Configuración automática para tu nuevo sistema         ║
+║            Automatic setup for your new Linux system           ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
 ```
 
-### Menú Principal
-```
+---
+
+# 🧭 Main Menu
+
+```text
 ═══════════════════════════════════════════════════════════════
-     MENÚ PRINCIPAL
+                     MAIN MENU
 ═══════════════════════════════════════════════════════════════
 
-  1) Instalar Navegadores
-  2) Instalar Aplicaciones
-  3) Instalar Herramientas de Desarrollo
-  4) Instalar Herramientas Adicionales (Git, Docker, etc.)
-  5) Compatibilidad con Windows (⚠️ NO RECOMENDADO)
-  6) Instalar TODO (sin Wine)
-  0) Salir
+  1) Install Browsers
+  2) Install Applications
+  3) Install Development Tools
+  4) Install Additional Tools (Git, Docker, etc.)
+  5) Windows Compatibility (⚠️ NOT RECOMMENDED)
+  6) Install EVERYTHING (without Wine)
+  0) Exit
 
-Selecciona una opción [0-6]:
+Select an option [0-6]:
 ```
 
-## 🛠️ Solución de Problemas
+---
 
-### El script no tiene permisos de ejecución
+# 🛠️ Troubleshooting
+
+## Script Has No Execute Permissions
 
 ```bash
 chmod +x install.sh
 ```
 
-### Error de permisos sudo
+---
 
-Asegúrate de que tu usuario está en el grupo sudo:
+## Sudo Permission Errors
+
+Make sure your user belongs to the sudo group:
 
 ```bash
 sudo usermod -aG sudo $USER
-# Cerrar sesión y volver a entrar
+# Log out and back in
 ```
 
-### Error de conexión a Internet
+---
 
-Verifica tu conexión:
+## Internet Connection Error
+
+Check connectivity:
 
 ```bash
-ping -c 4 8.8.8.8
+curl -Is https://deb.debian.org
 ```
 
-### Flatpak no instalado
+---
 
-El script instalará Flatpak automáticamente si es necesario, pero puedes hacerlo manualmente:
+## Flatpak Not Installed
+
+The installer can automatically install Flatpak, but you can also install it manually:
 
 ```bash
 sudo apt install flatpak
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+flatpak remote-add --if-not-exists flathub \
+https://flathub.org/repo/flathub.flatpakrepo
 ```
 
-### Ver logs de instalación
+---
 
-Los logs se guardan en `~/.easylinux/logs/`:
+## View Installation Logs
+
+Logs are stored in:
+
+```text
+~/.easylinux/logs/
+```
+
+Useful commands:
 
 ```bash
-# Ver el último log
+# Show latest log
 ls -lt ~/.easylinux/logs/ | head -n 2
 
-# Leer un log específico
+# Read a specific log
 cat ~/.easylinux/logs/install_YYYYMMDD_HHMMSS.log
 
-# Ver errores en el último log
+# Show recent errors
 grep ERROR ~/.easylinux/logs/install_*.log | tail -n 20
 ```
 
-### Una aplicación falló al instalarse
+---
 
-1. Revisa el log correspondiente
-2. Intenta instalar manualmente:
-   ```bash
-   sudo apt update
-   sudo apt install nombre-del-paquete
-   ```
-3. Verifica que los repositorios estén configurados correctamente
+## An Application Failed to Install
 
-### Sistema no actualiza
+1. Review the corresponding log
+2. Try installing manually:
 
 ```bash
-# Limpiar cache de apt
+sudo apt update
+sudo apt install package-name
+```
+
+3. Verify repositories are configured correctly
+
+---
+
+## System Fails to Update
+
+```bash
+# Clean apt cache
 sudo apt clean
 sudo apt autoclean
 
-# Actualizar lista de paquetes
+# Refresh package lists
 sudo apt update
 
-# Ejecutar una actualización completa
+# Full upgrade
 sudo apt full-upgrade
 ```
 
-### Problemas con Wine (Compatibilidad Windows)
+---
 
-#### Wine no se instala correctamente
+# 🍷 Wine Troubleshooting
+
+## Wine Does Not Install Correctly
 
 ```bash
-# Verificar soporte de arquitectura 32 bits
+# Check 32-bit architecture support
 dpkg --print-foreign-architectures
 
-# Si no aparece i386, agregarlo
+# If i386 is missing:
 sudo dpkg --add-architecture i386
 sudo apt update
 
-# Reinstalar Wine
+# Reinstall Wine
 sudo apt install --reinstall wine wine32 wine64
 ```
 
-#### Una aplicación de Windows no funciona con Wine
+---
 
-1. **Verifica la compatibilidad**: No todas las aplicaciones Windows funcionan en Wine
-   - Consulta la base de datos: https://appdb.winehq.org/
+## A Windows Application Does Not Work
 
-2. **Instala dependencias con Winetricks**:
-   ```bash
-   winetricks
-   # Selecciona los componentes necesarios (vcrun, dotnet, etc.)
-   ```
+1. **Check compatibility**
 
-3. **Usa PlayOnLinux para mejor compatibilidad**:
-   - PlayOnLinux gestiona múltiples versiones de Wine
-   - Mejor soporte para juegos y aplicaciones complejas
+   * [https://appdb.winehq.org/](https://appdb.winehq.org/)
 
-4. **Busca alternativas nativas**:
-   - Siempre es mejor usar aplicaciones nativas de Linux
-   - Ejemplo: LibreOffice en lugar de Microsoft Office
-
-#### Desinstalar Wine completamente
+2. **Install dependencies with Winetricks**
 
 ```bash
-# Eliminar Wine y sus dependencias
+winetricks
+```
+
+3. **Use PlayOnLinux**
+
+   * Easier Wine version management
+   * Better support for complex applications
+
+4. **Look for native alternatives**
+
+   * Native Linux applications are always preferred
+
+---
+
+## Fully Remove Wine
+
+```bash
 sudo apt remove --purge wine wine32 wine64 winetricks playonlinux
+
 sudo apt autoremove
 
-# Eliminar configuración de usuario
 rm -rf ~/.wine
 rm -rf ~/.PlayOnLinux
 ```
 
-## 📁 Estructura de Archivos
+---
 
-```
+# 📁 File Structure
+
+```text
 EasyLinux/
-├── install.sh              # Script principal
-├── Objetivos.md            # Especificaciones del proyecto
-├── README.md               # Este archivo
-├── WINE_ALTERNATIVES.md    # Alternativas nativas a apps Windows
-├── WINE_GUIDE.md          # Guía técnica de Wine
-└── logs/                  # Carpeta de logs (creada automáticamente)
-    └── install_*.log      # Logs de instalación
+├── install.sh
+├── README.md
+├── README-ES.md
+├── WINE_ALTERNATIVES.md
+├── WINE_GUIDE.md
+└── logs/
+    └── install_*.log
 ```
 
-## 🤝 Contribuir
+---
 
-¡Las contribuciones son bienvenidas! Si quieres agregar más aplicaciones o mejorar el script:
+# 🤝 Contributing
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/NuevaAplicacion`)
-3. Commit tus cambios (`git commit -m 'Añadir nueva aplicación'`)
-4. Push a la rama (`git push origin feature/NuevaAplicacion`)
-5. Abre un Pull Request
+Contributions are welcome.
 
-### Añadir una nueva aplicación
+## Workflow
 
-Para añadir una nueva aplicación al script:
+1. Fork the project
+2. Create a feature branch:
 
-1. Crea la función de instalación:
 ```bash
-install_miapp() {
-    print_info "Instalando MiApp..."
-    
-    if sudo apt install -y miapp &>> "$LOG_FILE"; then
-        print_success "MiApp instalado correctamente"
-        ((INSTALL_COUNT++))
-        return 0
-    else
-        print_error "Error al instalar MiApp"
-        FAILED_APPS+=("MiApp")
-        ((FAILED_COUNT++))
-        return 1
-    fi
+git checkout -b feature/NewApplication
+```
+
+3. Commit changes:
+
+```bash
+git commit -m "Add new application"
+```
+
+4. Push the branch:
+
+```bash
+git push origin feature/NewApplication
+```
+
+5. Open a Pull Request
+
+---
+
+# Adding a New Application
+
+Example wrapper-based installation function:
+
+```bash
+install_myapp() {
+
+    install_apt "myapp" "MyApp"
 }
 ```
 
-2. Añade la opción al menú correspondiente
-3. Documenta en el README.md
+---
 
-## 📝 Notas Importantes
+# 📝 Important Notes
 
-- **No ejecutes el script como root**: El script solicitará permisos sudo cuando sea necesario
-- **Revisa los logs**: Todos los comandos se registran para debugging
-- **Conexión a Internet**: Requerida durante toda la instalación
-- **Tiempo de instalación**: Varía según las aplicaciones seleccionadas (10-30 minutos aprox.)
-- **Reinicio recomendado**: Después de instalar todo, se recomienda reiniciar el sistema
-- **⚠️ Wine NO recomendado**: Evita instalar Wine a menos que sea absolutamente necesario. Busca siempre alternativas nativas de Linux primero.
+* Do not run the installer as root
+* Review logs for debugging
+* Internet connection is required during installation
+* Installation time depends on selected packages
+* Rebooting after a full install is recommended
+* Wine is strongly discouraged unless absolutely necessary
 
-## 🔜 Próximas Características
+---
 
-- [ ] Soporte para más distribuciones (Arch, Fedora)
-- [ ] Interfaz gráfica con Zenity/YAD
-- [ ] Configuración mediante archivo JSON
-- [ ] Modo desatendido (sin interacción)
-- [ ] Backup y restauración de configuraciones
-- [ ] Perfiles personalizados (Desarrollador, Gamer, Ofimática)
-- [ ] Instalación de temas y personalización visual
-- [ ] Configuración automática de dotfiles
+# 🔜 Planned Features
 
-## 📜 Licencia
+* [ ] Support for more distributions (Arch, Fedora)
+* [ ] GUI frontend with Zenity/YAD
+* [ ] YAML configuration support
+* [ ] Fully unattended mode
+* [ ] Backup and restore system configuration
+* [ ] Custom setup profiles
+* [ ] Theme and desktop customization
+* [ ] Automatic dotfiles deployment
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+---
 
-## 👤 Autor
+# 📜 License
+
+This project is licensed under the MIT License — see the `LICENSE` file for details.
+
+---
+
+# 👤 Author
 
 **Alastor**
 
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
+* GitHub: `@your-user`
 
-## 🙏 Agradecimientos
+---
 
-- A la comunidad de código abierto
-- A los desarrolladores de todas las aplicaciones incluidas
-- A los usuarios que contribuyen con feedback y mejoras
+# 🙏 Acknowledgements
+
+* Open-source community
+* Developers of included applications
+* Users contributing feedback and improvements
 
 ---
 
 <div align="center">
 
-**⭐ Si este proyecto te ha sido útil, considera darle una estrella ⭐**
+**⭐ If this project helped you, consider giving it a star ⭐**
 
-Hecho con ❤️ para la comunidad Linux
+Made with ❤️ for the Linux community
 
 </div>
