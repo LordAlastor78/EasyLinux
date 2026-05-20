@@ -1,6 +1,6 @@
 # 🐧 EasyLinux - Automatic Installer
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Consolas&size=18&duration=1200&pause=700&color=04B305&background=00000049&multiline=true&width=500&height=500&lines=%24+.%2Finstall.sh+--developer;%5BINFO%5D+Loading+profile%3A+user;%5BINFO%5D+Installing+development+toolchain...;%5BINFO%5D+Making+a+productive+system...;%5BLOAD%5D+Finishing+details+...;%5BSUCCESS%5D+Environment+bootstrap+completed)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Consolas&size=18&duration=500&pause=500&color=04B305&background=00000049&multiline=true&width=500&height=250&lines=%24+.%2Finstall.sh+--developer;%5BINFO%5D+Loading+profile%3A+developer;%5BINFO%5D+Installing+development+toolchain...;%5BINFO%5D+Making+a+productive+system...;%5BLOAD%5D+Finishing+details+...;%5BSUCCESS%5D+Environment+bootstrap+completed)](https://git.io/typing-svg)
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/your-user/EasyLinux)
 [![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/your-user/EasyLinux)
