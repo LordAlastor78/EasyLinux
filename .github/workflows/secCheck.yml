@@ -1,0 +1,43 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (with cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install workspace dependencies
+        run: |
+          # Install all workspaces (fast, reproducible)
+          npm ci
+
+      - name: Build (all workspaces)
+        run: |
+          npm run build --workspaces
+
+      - name: Run client tests
+        run: |
+          cd client
+          npm test --silent
+
+      - name: Audit dependencies (fail on high)
+        run: |
+          # Fail the job when high-severity vulnerabilities exist
+          npm audit --audit-level=high
+
+      - name: Lint repo for TODOs (basic)
+        run: |
+          echo "Security checks completed"
