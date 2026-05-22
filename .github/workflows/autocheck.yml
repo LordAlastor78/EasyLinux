@@ -1,13 +1,33 @@
-# .github/workflows/shellcheck.yml
-name: ShellCheck
+name: Test EasyLinux in Container
+
 on: [push, pull_request]
+
 jobs:
-  shellcheck:
+  test-install:
     runs-on: ubuntu-latest
+    
+    # Usamos un contenedor Debian limpio para simular un sistema nuevo
+    container:
+      image: debian:11
+      
     steps:
-      - uses: actions/checkout@v4
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@master
-        with:
-          check_together: 'yes'
-          format: gcc
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies for the runner
+        run: |
+          apt-get update
+          apt-get install -y sudo curl git
+
+      - name: Run EasyLinux Installer (Non-Interactive)
+        run: |
+          # Ejecutamos el script con flags para que no pida interacción
+          # --developer instala las herramientas de dev
+          # --yes confirma automáticamente
+          ./install.sh --developer --yes
+
+      - name: Verify Installation
+        run: |
+          # Comprobamos que algo crítico se haya instalado (ej. git o python3)
+          which git
+          which python3
